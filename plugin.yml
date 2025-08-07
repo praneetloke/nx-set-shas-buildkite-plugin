@@ -1,0 +1,16 @@
+name: nx-set-shas
+version: "0.0.1"
+description: A Buildkite plugin to fetch the SHA for the last successful build in a pipeline and use it as the BASE_SHA for Nx builds.
+author: https://github.com/praneetloke
+requirements:
+  - curl
+  - jq
+
+configuration:
+  properties:
+    api_token:
+      type: string
+      description: Buildkite API access token with the GraphQL scope enabled.
+  required:
+    - api_token
+  additionalProperties: false

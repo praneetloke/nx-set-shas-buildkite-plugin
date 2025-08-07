@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+API_TOKEN="${BUILDKITE_PLUGIN_NX_SET_SHAS_API_TOKEN:-}"
+org=${BUILDKITE_ORGANIZATION_SLUG}
+pipeline=${BUILDKITE_PIPELINE_NAME}
+branch=${BUILDKITE_BRANCH}
+
+if [ "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}" != "" ]; then
+  echo "~~~ Current build is a PR build. Will find last successful build for base branch: $BUILDKITE_PULL_REQUEST_BASE_BRANCH"
+  branch=${BUILDKITE_PULL_REQUEST_BASE_BRANCH}
+fi
+
+local query=$(cat <<EOF
+{
+  pipeline(slug: "$org/$pipeline") {
+    builds(first: 1, branch: "$branch", state: [PASSED],) {
+      edges {
+        node {
+          commit
+          branch
+          state
+        }
+      }
+    }
+  }
+}
+EOF
+)
+
+echo "~~~ Sending GraphQL query to fetch commit of last successful build"
+echo "$query"
+
+response=$(curl -sS -X POST https://graphql.buildkite.com/v1 \
+  -H "Authorization: Bearer $API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$(jq -n --arg q "$query" '{query: $q}')")
+
+echo "~~~ Raw response from Buildkite GraphQL (commit query):"
+echo "$response" | jq .
