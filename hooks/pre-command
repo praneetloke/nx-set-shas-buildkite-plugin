@@ -17,11 +17,12 @@ pipeline=${BUILDKITE_PIPELINE_SLUG}
 branch=${BUILDKITE_BRANCH}
 IS_PR=false
 
-echo "BUILDKITE_PULL_REQUEST: $BUILDKITE_PULL_REQUEST"
 if [ "${BUILDKITE_PULL_REQUEST}" != "false" ]; then
   IS_PR=true
   echo "Current build is a PR build. Will find last successful build for base branch: $BUILDKITE_PULL_REQUEST_BASE_BRANCH"
   branch=${BUILDKITE_PULL_REQUEST_BASE_BRANCH}
+else
+  echo "Current build is not triggered by a PR build"
 fi
 
 query=$(cat <<EOF
