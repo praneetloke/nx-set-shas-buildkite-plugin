@@ -3,7 +3,14 @@
 set -euo pipefail
 
 API_TOKEN="${BUILDKITE_PLUGIN_NX_SET_SHAS_API_TOKEN:-}"
-echo "API token: $API_TOKEN"
+if [ -z "${API_TOKEN:-}" ]; then
+  API_TOKEN="${GRAPHQL_API_TOKEN:-}"
+fi
+
+if [ -z "${API_TOKEN:-}" ]; then
+  echo "GraphQL API token is required."
+  exit 1
+fi
 
 org=${BUILDKITE_ORGANIZATION_SLUG}
 pipeline=${BUILDKITE_PIPELINE_NAME}

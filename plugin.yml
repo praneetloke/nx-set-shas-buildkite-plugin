@@ -8,9 +8,7 @@ requirements:
 
 configuration:
   properties:
-    api_token:
+    api-token:
       type: string
       description: Buildkite API access token with the GraphQL scope enabled.
-  required:
-    - api_token
   additionalProperties: false
