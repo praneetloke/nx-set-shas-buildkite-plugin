@@ -60,12 +60,12 @@ fi
 echo "Raw response from Buildkite GraphQL (commit query):"
 echo "$response" | jq .
 
-export NX_BASE=$(echo "$response" | jq -c -r '.data.pipeline.builds | select(.edges != []) | .edges.node.commit')
+export NX_BASE=$(echo "$response" | jq -c -r '.data.pipeline.builds | select(.edges != []) | .edges[0].node.commit')
 if [ -z "${NX_BASE:-}" ]; then
   echo "Last successful commit not found for $branch branch..."
 
   if [ $IS_PR = true ]; then
-    export NX_BASE=$(git merge-base $(TARGET_BRANCH) HEAD)
+    export NX_BASE=$(git merge-base $branch HEAD)
   else
     export NX_BASE=$(git rev-parse HEAD~1)
   fi 
