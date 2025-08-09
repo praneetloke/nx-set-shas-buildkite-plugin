@@ -13,18 +13,20 @@ if [ -z "${API_TOKEN:-}" ]; then
 fi
 
 org=${BUILDKITE_ORGANIZATION_SLUG}
-pipeline=${BUILDKITE_PIPELINE_NAME}
+pipeline=${BUILDKITE_PIPELINE_SLUG}
 branch=${BUILDKITE_BRANCH}
+IS_PR=false
 
 if [ "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}" != "" ]; then
-  echo "~~~ Current build is a PR build. Will find last successful build for base branch: $BUILDKITE_PULL_REQUEST_BASE_BRANCH"
+  IS_PR=true
+  echo "Current build is a PR build. Will find last successful build for base branch: $BUILDKITE_PULL_REQUEST_BASE_BRANCH"
   branch=${BUILDKITE_PULL_REQUEST_BASE_BRANCH}
 fi
 
 query=$(cat <<EOF
 {
   pipeline(slug: "$org/$pipeline") {
-    builds(first: 1, branch: "$branch", state: [PASSED],) {
+    builds(first: 1, branch: "$branch", state: PASSED) {
       edges {
         node {
           commit
@@ -38,7 +40,7 @@ query=$(cat <<EOF
 EOF
 )
 
-echo "~~~ Sending GraphQL query to fetch commit of last successful build"
+echo "Sending GraphQL query to fetch commit of last successful build"
 echo "$query"
 
 response=$(curl -sS -X POST https://graphql.buildkite.com/v1 \
@@ -46,5 +48,27 @@ response=$(curl -sS -X POST https://graphql.buildkite.com/v1 \
   -H "Content-Type: application/json" \
   -d "$(jq -n --arg q "$query" '{query: $q}')")
 
-echo "~~~ Raw response from Buildkite GraphQL (commit query):"
+ERR_MESSAGE=$(echo "$response" | jq -c '. | select(.errors != null) | .errors[0].message')
+
+if [ -n "${ERR_MESSAGE:-}" ]; then
+  echo "❌ GraphQL API call failed. Error: $ERR_MESSAGE"
+  exit 1
+fi
+
+echo "Raw response from Buildkite GraphQL (commit query):"
 echo "$response" | jq .
+
+export BASE_SHA=$(echo "$response" | jq -c -r '.data.pipeline.builds | select(.edges != []) | .edges.node.commit')
+if [ -z "${BASE_SHA:-}" ]; then
+  echo "Last successful commit not found for $branch branch..."
+
+  if [ $IS_PR = true ]; then
+    export BASE_SHA=$(git merge-base $(TARGET_BRANCH) HEAD)
+  else
+    export BASE_SHA=$(git rev-parse HEAD~1)
+  fi 
+fi
+
+echo "Setting BASE_SHA to: $BASE_SHA..."
+
+export HEAD_SHA=$(git rev-parse HEAD)
