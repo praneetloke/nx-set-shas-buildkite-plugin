@@ -12,7 +12,7 @@ if [ "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}" != "" ]; then
   branch=${BUILDKITE_PULL_REQUEST_BASE_BRANCH}
 fi
 
-local query=$(cat <<EOF
+query=$(cat <<EOF
 {
   pipeline(slug: "$org/$pipeline") {
     builds(first: 1, branch: "$branch", state: [PASSED],) {
