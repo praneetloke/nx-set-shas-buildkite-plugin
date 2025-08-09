@@ -11,3 +11,27 @@ for the affected projects. This is important if you have a few projects in your 
 not like to run build targets for all the projects every time.
 
 For more background on the problem, see the Nx docs for the `affected` [command](https://nx.dev/ci/features/affected).
+
+## Usage
+
+Add this plugin along with any other plugins you are using.
+
+```yaml
+steps:
+  ...
+  ...
+  - label: "Run nx"
+    commands:
+      - npx nx affected -t lint build test
+    plugins:
+      ...
+      ...
+      - secrets:
+          variables:
+            GRAPHQL_API_TOKEN: GRAPHQL_API_TOKEN
+      - nx-set-shas#v1.0.0
+      ...
+      ...
+  ...
+  ...
+```
