@@ -14,6 +14,8 @@ For more background on the problem, see the Nx docs for the `affected` [command]
 
 ## Usage
 
+Create an [API access token](https://buildkite.com/user/api-access-tokens) for your organization with the GraphQL scope.
+
 Add this plugin along with any other plugins you are using.
 
 ```yaml
