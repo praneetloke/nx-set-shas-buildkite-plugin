@@ -14,9 +14,9 @@ For more background on the problem, see the Nx docs for the `affected` [command]
 
 ## Usage
 
-Create an [API access token](https://buildkite.com/user/api-access-tokens) for your organization with the GraphQL scope.
-
-Add this plugin along with any other plugins you are using.
+1. Create an [API access token](https://buildkite.com/user/api-access-tokens) for your organization with the GraphQL scope.
+1. Add the API access token as an [agent secret on Buildkite](https://buildkite.com/docs/pipelines/security/secrets/buildkite-secrets) or using another [secret manager service](https://buildkite.com/docs/pipelines/security/secrets/managing).
+1. Use this plugin in the step where you would like to run `nx affected` command:
 
 ```yaml
 steps:
