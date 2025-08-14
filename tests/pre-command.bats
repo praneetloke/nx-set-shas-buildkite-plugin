@@ -14,6 +14,8 @@ setup() {
 }
 
 get_successful_base_commit_response() {
+  local expected_nx_base=$1
+
   response=$(cat <<EOF
 {
   "data": {
@@ -85,7 +87,7 @@ teardown() {
   expected_nx_base="ead215f889b0aa1aeb985373f5b512af7015445f"
   expected_nx_head="234kj5f889b0aa1aeb985373f5b512af70152345"
 
-  stub curl "echo '$(get_successful_base_commit_response)'"
+  stub curl "echo '$(get_successful_base_commit_response $expected_nx_base)'"
   stub git "rev-parse HEAD : echo $expected_nx_head"
 
   run "$PWD/hooks/pre-command"
@@ -104,7 +106,7 @@ teardown() {
   expected_nx_base="ead215f889b0aa1aeb985373f5b512af7015445f"
   expected_nx_head="234kj5f889b0aa1aeb985373f5b512af70152345"
 
-  stub curl "echo '$(get_successful_base_commit_response)'"
+  stub curl "echo '$(get_successful_base_commit_response $expected_nx_base)'"
   stub git "rev-parse HEAD : echo $expected_nx_head"
 
   run "$PWD/hooks/pre-command"
