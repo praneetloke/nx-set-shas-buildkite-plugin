@@ -13,7 +13,11 @@ setup() {
   export BUILDKITE_PIPELINE_SLUG="test-pipeline"
 }
 
+# Note: This snippet was copied from an issue
+# in jasonkarns/bats-mock but Buildkite maintains
+# its own fork
 # https://github.com/jasonkarns/bats-mock/issues/3#issuecomment-406301922
+# https://github.com/buildkite-plugins/bats-mock?tab=readme-ov-file#credits
 cleanup_stubs() {
   if stat ${BATS_TMPDIR}/*-stub-plan >/dev/null 2>&1; then
     for file in ${BATS_TMPDIR}/*-stub-plan; do
