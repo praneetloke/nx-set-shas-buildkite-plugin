@@ -1,8 +1,6 @@
 {
   "yaml.schemas": {
-    "https://raw.githubusercontent.com/buildkite-plugins/buildkite-plugin-linter/refs/heads/master/lib/plugin-yaml-schema.yml": [
-      "plugin.yml",
-      "file:///Users/praneetloke/GitHub/nx-set-shas-buildkite-plugin/plugin.yml"
-    ]
+    "https://raw.githubusercontent.com/buildkite-plugins/buildkite-plugin-linter/refs/heads/master/lib/plugin-yaml-schema.yml": "./plugin.yml",
+    "https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json": "./.buildkite/pipeline.yml"
   }
 }
