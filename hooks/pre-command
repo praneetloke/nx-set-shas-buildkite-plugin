@@ -50,27 +50,28 @@ response=$(curl -sS -X POST https://graphql.buildkite.com/v1 \
   -H "Content-Type: application/json" \
   -d "$(jq -n --arg q "$query" '{query: $q}')")
 
-ERR_MESSAGE=$(echo "$response" | jq -c '. | select(.errors != null) | .errors[0].message')
+echo "Raw response from Buildkite GraphQL (commit query):"
+echo "$response"
+
+ERR_MESSAGE=$(echo "$response" | jq -c -r '. | select(.errors != null) | .errors[0].message')
 
 if [ -n "${ERR_MESSAGE:-}" ]; then
   echo "❌ GraphQL API call failed. Error: $ERR_MESSAGE"
   exit 1
 fi
 
-echo "Raw response from Buildkite GraphQL (commit query):"
-echo "$response" | jq .
-
 export NX_BASE=$(echo "$response" | jq -c -r '.data.pipeline.builds | select(.edges != []) | .edges[0].node.commit')
-if [ -z "${NX_BASE:-}" ]; then
-  echo "Last successful commit not found for $branch branch..."
+if [ -z "${NX_BASE:-}" ] || [ "${NX_BASE}" = "" ]; then
+  echo "Last successful commit not found for '$branch' branch..."
 
-  if [ $IS_PR = true ]; then
+  if [ "$IS_PR" = "true" ]; then
     export NX_BASE=$(git merge-base $branch HEAD)
   else
     export NX_BASE=$(git rev-parse HEAD~1)
   fi 
 fi
 
-echo "Setting NX_BASE to: $NX_BASE..."
+echo "NX_BASE: $NX_BASE"
 
 export NX_HEAD=$(git rev-parse HEAD)
+echo "NX_HEAD: $NX_HEAD"

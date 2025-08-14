@@ -37,3 +37,10 @@ steps:
   ...
   ...
 ```
+
+## Testing
+
+This plugin uses Buildkite's [plugin tester](https://buildkite.com/resources/plugins/buildkite-plugins/buildkite-plugin-tester/).
+Run tests with `docker compose run --rm tests`.
+
+Tests are written using [BATS](https://bats-core.readthedocs.io/en/stable/tutorial.html).
