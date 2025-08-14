@@ -125,9 +125,11 @@ teardown() {
   expected_nx_head="234kj5f889b0aa1aeb985373f5b512af70152345"
 
   stub curl "echo '$(get_no_successful_base_commit_response)'"
+  # Stubs MUST be in the order they will be executed
+  # by the program under test or they won't be matched properly.
   stub git \
-    "rev-parse HEAD : echo $expected_nx_head" \
-    "merge-base $BUILDKITE_PULL_REQUEST_BASE_BRANCH HEAD : echo $expected_nx_base"
+    "merge-base ${BUILDKITE_PULL_REQUEST_BASE_BRANCH} HEAD : echo $expected_nx_base" \
+    "rev-parse HEAD : echo $expected_nx_head"
 
   run "$PWD/hooks/pre-command"
 
