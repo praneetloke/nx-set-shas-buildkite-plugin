@@ -53,7 +53,7 @@ get_no_successful_base_commit_response() {
 }
 EOF
 )
-  # minified_response=$(jq -r -n --arg r "$response" '$r')
+
   echo $response
 }
 
