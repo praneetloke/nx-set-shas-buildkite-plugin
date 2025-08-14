@@ -13,6 +13,21 @@ setup() {
   export BUILDKITE_PIPELINE_SLUG="test-pipeline"
 }
 
+# https://github.com/jasonkarns/bats-mock/issues/3#issuecomment-406301922
+cleanup_stubs() {
+  if stat ${BATS_TMPDIR}/*-stub-plan >/dev/null 2>&1; then
+    for file in ${BATS_TMPDIR}/*-stub-plan; do
+      program=$(basename $(echo "$file" | rev | cut -c 11- | rev))
+      # Note: This will not error if unstubbing a command fails.
+      unstub $program || true
+    done
+  fi
+}
+
+teardown() {
+  cleanup_stubs
+}
+
 get_successful_base_commit_response() {
   local expected_nx_base=$1
 
@@ -55,21 +70,6 @@ EOF
 )
 
   echo $response
-}
-
-# https://github.com/jasonkarns/bats-mock/issues/3#issuecomment-406301922
-cleanup_stubs() {
-  if stat ${BATS_TMPDIR}/*-stub-plan >/dev/null 2>&1; then
-    for file in ${BATS_TMPDIR}/*-stub-plan; do
-      program=$(basename $(echo "$file" | rev | cut -c 11- | rev))
-      # Note: This will not error if unstubbing a command fails.
-      unstub $program || true
-    done
-  fi
-}
-
-teardown() {
-  cleanup_stubs
 }
 
 @test "Fails when API token is not detected" {
