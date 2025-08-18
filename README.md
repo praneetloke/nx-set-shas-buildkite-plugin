@@ -1,3 +1,5 @@
+⚠️ This plugin is available at https://github.com/buildkite-plugins/nx-set-shas-buildkite-plugin.
+
 # nx-set-shas-buildkite-plugin
 
 A Buildkite plugin to set base and HEAD SHAs for Nx.
